@@ -18,10 +18,6 @@ const Navbar = () => {
     }
   };
 
-  const isActive = (path: string) => {
-    return pathname === path ? 'text-indigo-600' : 'text-gray-700 hover:text-indigo-600';
-  };
-
   return (
     <nav className="bg-white shadow">
       <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
