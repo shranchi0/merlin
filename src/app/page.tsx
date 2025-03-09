@@ -1,127 +1,296 @@
+'use client';
+
 import Link from 'next/link';
 import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import { Moon, Sun } from 'lucide-react';
 
 export default function Home() {
+  // Start with null to avoid hydration mismatch
+  const [isDarkMode, setIsDarkMode] = useState<boolean | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  // Effect to run once after component mounts
+  useEffect(() => {
+    // Check if dark mode is set in localStorage
+    const storedMode = localStorage.getItem('darkMode');
+    // Default to true if not set, otherwise parse the value
+    const initialDarkMode = storedMode === null ? true : storedMode === 'true';
+    
+    setIsDarkMode(initialDarkMode);
+    setMounted(true);
+
+    // Set the initial class on document
+    if (initialDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    // Toggle the current state
+    const newDarkMode = !isDarkMode;
+    
+    // Update state
+    setIsDarkMode(newDarkMode);
+    
+    // Update DOM directly for immediate effect
+    if (newDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('darkMode', String(newDarkMode));
+  };
+
+  // Prevent hydration issues
+  if (!mounted || isDarkMode === null) {
+    return <div className="min-h-screen bg-black"></div>;
+  }
+
+  // Define color scheme based on mode - inspired by Linear's clean aesthetic with slate greys
+  const bgColor = isDarkMode ? 'bg-[#0a0a0a]' : 'bg-white';
+  const textColor = isDarkMode ? 'text-white' : 'text-slate-900';
+  const secondaryText = isDarkMode ? 'text-slate-400' : 'text-slate-600';
+  const borderColor = isDarkMode ? 'border-slate-800' : 'border-slate-200';
+  const cardBg = isDarkMode ? 'bg-slate-900' : 'bg-white';
+  const accentColor = isDarkMode ? 'text-white' : 'text-slate-900';
+  const buttonBg = isDarkMode ? 'bg-white' : 'bg-slate-900';
+  const buttonText = isDarkMode ? 'text-slate-900' : 'text-white';
+  const buttonHover = isDarkMode ? 'hover:bg-slate-100' : 'hover:bg-slate-800';
+  const sectionBg = isDarkMode ? 'bg-slate-900' : 'bg-slate-50';
+  const toggleBg = isDarkMode ? 'bg-slate-800' : 'bg-slate-100';
+  const toggleHover = isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-200';
+  
   return (
-    <div className="bg-white">
-      {/* Hero section */}
-      <div className="relative isolate overflow-hidden bg-gradient-to-b from-indigo-100/20">
-        <div className="mx-auto max-w-7xl px-6 pt-10 pb-24 sm:pb-32 lg:flex lg:px-8 lg:py-40">
-          <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-xl lg:flex-shrink-0 lg:pt-8">
-            <div className="mt-24 sm:mt-32 lg:mt-16">
-              <a href="#" className="inline-flex space-x-6">
-                <span className="rounded-full bg-indigo-600/10 px-3 py-1 text-sm font-semibold leading-6 text-indigo-600 ring-1 ring-inset ring-indigo-600/10">
-                  Latest updates
-                </span>
-                <span className="inline-flex items-center space-x-2 text-sm font-medium leading-6 text-gray-600">
-                  <span>Just shipped v1.0</span>
-                </span>
-              </a>
-            </div>
-            <h1 className="mt-10 text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-              Firebase + Next.js Starter
-            </h1>
-            <p className="mt-6 text-lg leading-8 text-gray-600">
-              A complete starter template with Firebase authentication and Firestore database integration.
-              Built with Next.js, TypeScript, and TailwindCSS. Deploy to Vercel with one click.
-            </p>
-            <div className="mt-10 flex items-center gap-x-6">
-              <Link
-                href="/register"
-                className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-              >
-                Get started
-              </Link>
-              <Link href="/login" className="text-sm font-semibold leading-6 text-gray-900">
-                Sign in <span aria-hidden="true">→</span>
-              </Link>
-            </div>
-          </div>
-          <div className="mx-auto mt-16 flex max-w-2xl sm:mt-24 lg:ml-10 lg:mr-0 lg:mt-0 lg:max-w-none lg:flex-none xl:ml-32">
-            <div className="max-w-3xl flex-none sm:max-w-5xl lg:max-w-none">
-              <div className="-m-2 rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 lg:-m-4 lg:rounded-2xl lg:p-4">
-                <Image
-                  src="https://tailwindui.com/img/component-images/project-app-screenshot.png"
-                  alt="App screenshot"
-                  width={2432}
-                  height={1442}
-                  className="w-[76rem] rounded-md shadow-2xl ring-1 ring-gray-900/10"
-                />
-              </div>
-            </div>
-          </div>
+    <div className={`min-h-screen ${bgColor} ${textColor} transition-colors duration-200`}>
+      {/* Grid Background - Linear inspired subtle grid */}
+      <div className={`
+        fixed inset-0 z-0 pointer-events-none
+        ${isDarkMode 
+          ? 'opacity-[0.03]' 
+          : 'opacity-[0.03]'
+        }
+      `}>
+        <div className="absolute inset-0 grid grid-cols-12 h-full w-full">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className={`border-r ${isDarkMode ? 'border-slate-700' : 'border-slate-300'} h-full`}></div>
+          ))}
+        </div>
+        <div className="absolute inset-0 grid grid-rows-12 h-full w-full">
+          {Array.from({ length: 12 }).map((_, i) => (
+            <div key={i} className={`border-b ${isDarkMode ? 'border-slate-700' : 'border-slate-300'} w-full`}></div>
+          ))}
         </div>
       </div>
 
-      {/* Feature section */}
-      <div className="mx-auto mt-32 max-w-7xl px-6 sm:mt-56 lg:px-8">
-        <div className="mx-auto max-w-2xl lg:text-center">
-          <h2 className="text-base font-semibold leading-7 text-indigo-600">Deploy faster</h2>
-          <p className="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Everything you need to build your web app
-          </p>
-          <p className="mt-6 text-lg leading-8 text-gray-600">
-            This template includes everything you need to get started with your Next.js + Firebase project.
-            Authentication, database, and deployment are all set up and ready to go.
-          </p>
+      {/* Navigation - Linear inspired minimal header */}
+      <header className="fixed top-0 left-0 right-0 z-40 border-b border-transparent">
+        <div className={`max-w-7xl mx-auto px-6 py-4 flex justify-between items-center ${bgColor}`}>
+          <div className="flex items-center space-x-10">
+            <Link href="/" className={`text-xl font-semibold ${textColor}`}>
+              Firebase Next.js
+            </Link>
+            <nav className="hidden md:flex space-x-8">
+              <Link href="/dashboard" className={`text-sm ${secondaryText} hover:${textColor} transition-colors`}>
+                Dashboard
+              </Link>
+              <Link href="#features" className={`text-sm ${secondaryText} hover:${textColor} transition-colors`}>
+                Features
+              </Link>
+              <Link href="/pricing" className={`text-sm ${secondaryText} hover:${textColor} transition-colors`}>
+                Pricing
+              </Link>
+            </nav>
+          </div>
+          <div className="flex items-center space-x-4">
+            {/* Theme toggle button - moved to navbar */}
+            <button
+              onClick={toggleTheme}
+              className={`p-2 rounded-full ${toggleBg} ${isDarkMode ? 'text-white' : 'text-slate-900'} ${toggleHover} transition-colors`}
+              aria-label={isDarkMode ? "Switch to light mode" : "Switch to dark mode"}
+            >
+              {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <Link href="/login" className={`text-sm ${secondaryText} hover:${textColor} transition-colors`}>
+              Log in
+            </Link>
+            <Link 
+              href="/register" 
+              className={`text-sm px-4 py-2 rounded-md ${buttonBg} ${buttonText} ${buttonHover} transition-colors`}
+            >
+              Sign up
+            </Link>
+          </div>
         </div>
-        <div className="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-4xl">
-          <dl className="grid max-w-xl grid-cols-1 gap-x-8 gap-y-10 lg:max-w-none lg:grid-cols-2 lg:gap-y-16">
-            <div className="relative pl-16">
-              <dt className="text-base font-semibold leading-7 text-gray-900">
-                <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z" />
-                  </svg>
-                </div>
-                Firebase Authentication
-              </dt>
-              <dd className="mt-2 text-base leading-7 text-gray-600">
-                Complete authentication flow with email/password and Google sign-in options. Protected routes and user management included.
-              </dd>
+      </header>
+
+      {/* Hero Section - Linear inspired clean layout */}
+      <div className="pt-36 pb-20 md:pt-44 md:pb-32">
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div 
+            className="max-w-4xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+          >
+            <h1 className={`text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-8 leading-[1.1] ${textColor}`}>
+              Firebase + Next.js starter
+              <span className="block">for building products</span>
+            </h1>
+            <p className={`text-xl md:text-2xl mb-12 max-w-2xl ${secondaryText}`}>
+              Meet the system for modern web application development.
+              Authentication, database, and deployment all set up.
+            </p>
+            <div className="flex flex-col sm:flex-row items-start gap-4">
+              <Link
+                href="/register"
+                className={`px-6 py-3 rounded-md ${buttonBg} ${buttonText} ${buttonHover} transition-colors inline-flex items-center font-medium`}
+              >
+                Start building
+              </Link>
+              <Link 
+                href="#features" 
+                className={`px-6 py-3 text-sm font-medium ${secondaryText} hover:${textColor} transition-colors inline-flex items-center`}
+              >
+                Learn about features
+                <svg className="ml-2 w-4 h-4" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6.5 12.5L11 8L6.5 3.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </Link>
             </div>
-            <div className="relative pl-16">
-              <dt className="text-base font-semibold leading-7 text-gray-900">
-                <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                  </svg>
-                </div>
-                Firestore Database
-              </dt>
-              <dd className="mt-2 text-base leading-7 text-gray-600">
-                Firestore database integration with utility functions for CRUD operations. TypeScript types included.
-              </dd>
+          </motion.div>
+          
+          {/* Product screenshot - Linear inspired UI */}
+          <motion.div 
+            className="mt-24 relative rounded-lg overflow-hidden border"
+            initial={{ opacity: 0, y: 40 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+          >
+            <div className={`${borderColor}`}>
+              <Image
+                src="/app-screenshot.png"
+                alt="App screenshot"
+                width={2432}
+                height={1442}
+                className="w-full h-auto rounded-md"
+              />
             </div>
-            <div className="relative pl-16">
-              <dt className="text-base font-semibold leading-7 text-gray-900">
-                <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.864 4.243A7.5 7.5 0 0119.5 10.5c0 2.92-.556 5.709-1.568 8.268M5.742 6.364A7.465 7.465 0 004.5 10.5a7.464 7.464 0 01-1.15 3.993m1.989 3.559A11.209 11.209 0 008.25 10.5a3.75 3.75 0 117.5 0c0 .527-.021 1.049-.064 1.565M12 10.5a14.94 14.94 0 01-3.6 9.75m6.633-4.596a18.666 18.666 0 01-2.485 5.33" />
-                  </svg>
-                </div>
-                Next.js App Router
-              </dt>
-              <dd className="mt-2 text-base leading-7 text-gray-600">
-                Built with the latest Next.js App Router, supporting server components, client components, and efficient routing.
-              </dd>
-            </div>
-            <div className="relative pl-16">
-              <dt className="text-base font-semibold leading-7 text-gray-900">
-                <div className="absolute left-0 top-0 flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-600">
-                  <svg className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-                  </svg>
-                </div>
-                Responsive Design
-              </dt>
-              <dd className="mt-2 text-base leading-7 text-gray-600">
-                Fully responsive design built with TailwindCSS. Looks great on desktop, tablet, and mobile.
-              </dd>
-            </div>
-          </dl>
+          </motion.div>
         </div>
       </div>
+
+      {/* Features Section - Linear inspired minimal sections */}
+      <section id="features" className={`py-24 ${sectionBg}`}>
+        <div className="max-w-7xl mx-auto px-6">
+          <motion.div 
+            className="mb-16"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className={`text-3xl font-bold tracking-tight mb-4 ${textColor}`}>Built for developers</h2>
+            <p className={`text-lg max-w-2xl ${secondaryText}`}>
+              Everything you need to build modern web applications with 
+              Firebase authentication and database integration.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[
+              {
+                title: "Authentication",
+                description: "Complete auth flow with email/password and social sign-in options. Protected routes included."
+              },
+              {
+                title: "Firestore Database",
+                description: "Database integration with utility functions for CRUD operations and TypeScript types."
+              },
+              {
+                title: "Modern Stack",
+                description: "Built with Next.js App Router, React 19, TypeScript, and TailwindCSS for rapid development."
+              }
+            ].map((feature, index) => (
+              <motion.div 
+                key={index}
+                className={`p-6 rounded-lg ${cardBg} border ${borderColor}`}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.4, delay: index * 0.1 }}
+              >
+                <h3 className={`text-lg font-semibold mb-3 ${textColor}`}>{feature.title}</h3>
+                <p className={`${secondaryText}`}>{feature.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section - Linear inspired minimal CTA */}
+      <section className="py-24">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <h2 className={`text-3xl font-bold mb-6 ${textColor}`}>Ready to get started?</h2>
+            <p className={`text-lg mb-8 ${secondaryText}`}>
+              Start building your application today with this complete starter template.
+            </p>
+            <div className="flex flex-col sm:flex-row justify-center gap-4">
+              <Link
+                href="/register"
+                className={`px-8 py-3 rounded-md ${buttonBg} ${buttonText} ${buttonHover} transition-colors font-medium`}
+              >
+                Create an account
+              </Link>
+              <Link
+                href="/login"
+                className={`px-8 py-3 rounded-md border ${borderColor} ${textColor} hover:bg-slate-100 dark:hover:bg-slate-800 hover:bg-opacity-30 transition-colors font-medium`}
+              >
+                Log in
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Footer - Linear inspired minimal footer */}
+      <footer className={`py-16 border-t ${borderColor}`}>
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="mb-8 md:mb-0">
+              <Link href="/" className={`text-xl font-semibold ${textColor}`}>
+                Firebase Next.js
+              </Link>
+              <p className={`mt-2 text-sm ${secondaryText}`}>A complete starter template</p>
+            </div>
+            <div className="flex space-x-8 text-sm">
+              <Link href="/login" className={`${secondaryText} hover:${textColor} transition-colors`}>
+                Log in
+              </Link>
+              <Link href="/register" className={`${secondaryText} hover:${textColor} transition-colors`}>
+                Sign up
+              </Link>
+              <Link href="/dashboard" className={`${secondaryText} hover:${textColor} transition-colors`}>
+                Dashboard
+              </Link>
+            </div>
+          </div>
+          <div className={`mt-16 border-t ${borderColor} pt-8 text-center text-sm ${secondaryText}`}>
+            © {new Date().getFullYear()} Firebase Next.js App. All rights reserved.
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
